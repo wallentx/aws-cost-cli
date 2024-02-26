@@ -24,6 +24,7 @@ program
   .option('-s, --secret-key [key]', 'AWS secret key')
   .option('-t, --session-Token [key]', 'AWS session Token')
   .option('-r, --region [region]', 'AWS region', 'us-east-1')
+  .option('--role-arn [arn]', 'ARN of IAM role')
   // Output variants
   .option('-j, --json', 'Get the output as JSON')
   .option('-u, --summary', 'Get only the summary without service breakdown')
@@ -45,6 +46,7 @@ type OptionsType = {
   secretKey: string;
   sessionToken: string;
   region: string;
+  roleArn: string;
   // AWS profile to use
   profile: string;
   // Output variants
@@ -71,6 +73,7 @@ const awsConfig = await getAwsConfigFromOptionsOrFile({
   secretKey: options.secretKey,
   sessionToken: options.sessionToken,
   region: options.region,
+  roleArn: options.roleArn,
 });
 
 const alias = await getAccountAlias(awsConfig);
