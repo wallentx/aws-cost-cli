@@ -79,28 +79,26 @@ async function loadAwsCredentials(
     };
   } else {
     // todo: obtain temporary credentials
-    if (!accessKey || !secretKey) {
-      const sharedCredentialsFile =
-        process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
-      const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
+    const sharedCredentialsFile =
+      process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
+    const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
 
-      printFatalError(`
-        Could not find the AWS credentials in the following files for the profile "${profile}":
-        ${chalk.bold(sharedCredentialsFile)}
-        ${chalk.bold(sharedConfigFile)}
+    printFatalError(`
+    Could not find the AWS credentials in the following files for the profile "${profile}":
+    ${chalk.bold(sharedCredentialsFile)}
+    ${chalk.bold(sharedConfigFile)}
 
-        If the config files exist at different locations, set the following environment variables:
-        ${chalk.bold(`AWS_SHARED_CREDENTIALS_FILE`)}
-        ${chalk.bold(`AWS_CONFIG_FILE`)}
+    If the config files exist at different locations, set the following environment variables:
+    ${chalk.bold(`AWS_SHARED_CREDENTIALS_FILE`)}
+    ${chalk.bold(`AWS_CONFIG_FILE`)}
 
-        You can also configure the credentials via the following command:
-        ${chalk.bold(`aws configure --profile ${profile}`)}
+    You can also configure the credentials via the following command:
+    ${chalk.bold(`aws configure --profile ${profile}`)}
 
-        You can also provide the credentials via the following options:
-        ${chalk.bold(`--access-key`)}
-        ${chalk.bold(`--secret-key`)}
-        ${chalk.bold(`--region`)}
-        `);
-    }
+    You can also provide the credentials via the following options:
+    ${chalk.bold(`--access-key`)}
+    ${chalk.bold(`--secret-key`)}
+    ${chalk.bold(`--region`)}
+    `);
   }
 }
