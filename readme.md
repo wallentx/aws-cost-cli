@@ -35,6 +35,7 @@ $ aws-cost --help
     -k, --access-key [key]         AWS access key
     -s, --secret-key [key]         AWS secret key
     -r, --region [region]          AWS region (default: us-east-1)
+    -a, --role-arn [arn]           AWS role ARN to assume
 
     -p, --profile [profile]        AWS profile to use (default: "default")
 
@@ -62,6 +63,12 @@ aws-cost
 ```
 
 To configure the credentials using aws-cli, have a look at the [aws-cli docs](https://github.com/aws/aws-cli#configuration) for more information.
+
+If you need to assume a role, you can pass the `role-arn` option:
+
+```bash
+aws-cost -a arn:aws:iam::123456789012:role/your-role-arn
+```
 
 ## Detailed Breakdown
 
@@ -197,7 +204,53 @@ Regarding the credentials, you need to have the following permissions in order t
 }
 ```
 
-Also, please note that this tool uses AWS Cost Explorer under the hood which [costs $0.01 per request](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/pricing/).
+If you need to use Role-Based Access Control (RBAC), you will need to configure two IAM roles: the provider role and the consumer role.
+
+1. **Provider Role**
+
+   This role provides the necessary permissions for `aws-cost-cli`. It requires the above permissions policy and the following trust policy.
+
+   **Trust Policy**
+
+   Replace `arn:aws:iam::YOUR_ACCOUNT_ID:role/YourConsumerRole` with the ARN of the consumer role.
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Principal": {
+           "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:role/YourConsumerRole"
+         },
+         "Action": "sts:AssumeRole"
+       }
+     ]
+   }
+   ```
+
+2. **Consumer Role**
+
+   This role is used by the user or service (such as GitHub Actions) that needs to assume the provider role to access cost information. It requires the following permissions policy.
+
+   **Permissions Policy**
+
+   Replace `arn:aws:iam::YOUR_ACCOUNT_ID:role/YourProviderRole` with the ARN of the provider role.
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": "sts:AssumeRole",
+         "Resource": "arn:aws:iam::YOUR_ACCOUNT_ID:role/YourProviderRole"
+       }
+     ]
+   }
+   ```
+
+Please also note that this tool uses AWS Cost Explorer under the hood which [costs $0.01 per request](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/pricing/).
 
 ## License
 

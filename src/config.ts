@@ -1,4 +1,5 @@
 import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
+import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import chalk from 'chalk';
 import { printFatalError } from './logger';
 
@@ -23,8 +24,10 @@ export async function getAwsConfigFromOptionsOrFile(options: {
   secretKey;
   sessionToken;
   region: string;
+  roleArn?: string;
 }): Promise<AWSConfig> {
-  const { profile, accessKey, secretKey, sessionToken, region } = options;
+  const { profile, accessKey, secretKey, sessionToken, region, roleArn } =
+    options;
 
   if (accessKey || secretKey) {
     if (!accessKey || !secretKey) {
@@ -46,7 +49,7 @@ export async function getAwsConfigFromOptionsOrFile(options: {
   }
 
   return {
-    credentials: await loadAwsCredentials(profile),
+    credentials: await loadAwsCredentials(profile, region, roleArn),
     region: region,
   };
 }
@@ -57,6 +60,8 @@ export async function getAwsConfigFromOptionsOrFile(options: {
  */
 async function loadAwsCredentials(
   profile: string = 'default',
+  region: string,
+  roleArn = '',
 ): Promise<AWSConfig['credentials'] | undefined> {
   const configFiles = await loadSharedConfigFiles();
 
@@ -78,7 +83,26 @@ async function loadAwsCredentials(
       sessionToken: sessionToken,
     };
   } else {
-    // todo: obtain temporary credentials
+    try {
+      const stsClient = new STSClient({ region: region });
+      const assumeRoleCommand = new AssumeRoleCommand({
+        RoleArn: roleArn,
+        RoleSessionName: 'aws-cost-cli',
+      });
+
+      const { Credentials } = await stsClient.send(assumeRoleCommand);
+
+      if (Credentials) {
+        return {
+          accessKeyId: Credentials.AccessKeyId,
+          secretAccessKey: Credentials.SecretAccessKey,
+          sessionToken: Credentials.SessionToken,
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching temporary credentials:', error);
+    }
+
     const sharedCredentialsFile =
       process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
     const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
@@ -99,6 +123,7 @@ async function loadAwsCredentials(
     ${chalk.bold(`--access-key`)}
     ${chalk.bold(`--secret-key`)}
     ${chalk.bold(`--region`)}
+    ${chalk.bold(`--role-arn`)}
     `);
   }
 }
