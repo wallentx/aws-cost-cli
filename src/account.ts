@@ -5,6 +5,10 @@ import { showSpinner } from './logger';
 export async function getAccountAlias(awsConfig: AWSConfig): Promise<string> {
   showSpinner('Getting account alias');
 
+  if (awsConfig.targetAccount) {
+    return awsConfig.targetAccount;
+  }
+
   const iam = new AWS.IAM(awsConfig);
 
   const accountAliases = await iam.listAccountAliases().promise();
