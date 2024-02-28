@@ -16,6 +16,43 @@ export async function getRawCostByService(awsConfig: AWSConfig): Promise<RawCost
   const endDate = dayjs().subtract(1, 'day');
   const startDate = endDate.subtract(65, 'day');
 
+  const groupByConfig = [
+    {
+      Type: 'DIMENSION',
+      Key: 'SERVICE',
+    },
+  ];
+
+  let filterConfig = {
+    Not: {
+      Dimensions: {
+        Key: "RECORD_TYPE",
+        Values: ["Credit", "Refund", "Upfront", "Support"],
+      },
+    },
+  };
+
+  if (awsConfig.targetAccount) {
+    groupByConfig.push({
+      Type: "DIMENSION",
+      Key: "LINKED_ACCOUNT",
+    });
+
+    filterConfig = {
+      And: [
+        {
+          Dimensions: {
+            Key: "LINKED_ACCOUNT",
+            Values: [
+              awsConfig.targetAccount,
+            ],
+          },
+        },
+        filterConfig,
+      ],
+    };
+  }
+
   // Get the cost and usage data for the specified account
   const pricingData = await costExplorer
     .getCostAndUsage({
@@ -24,21 +61,9 @@ export async function getRawCostByService(awsConfig: AWSConfig): Promise<RawCost
         End: endDate.format('YYYY-MM-DD'),
       },
       Granularity: 'DAILY',
-      Filter: {
-        Not: {
-          Dimensions: {
-            Key: 'RECORD_TYPE',
-            Values: ['Credit', 'Refund', 'Upfront', 'Support'],
-          },
-        },
-      },
+      Filter: filterConfig,
       Metrics: ['UnblendedCost'],
-      GroupBy: [
-        {
-          Type: 'DIMENSION',
-          Key: 'SERVICE',
-        },
-      ],
+      GroupBy: groupByConfig,
     })
     .promise();
 
@@ -46,7 +71,8 @@ export async function getRawCostByService(awsConfig: AWSConfig): Promise<RawCost
 
   for (const day of pricingData.ResultsByTime) {
     for (const group of day.Groups) {
-      const serviceName = group.Keys[0];
+      const filterKeys = group.Keys;
+      const serviceName = filterKeys.find(key => !/^\d{12}$/.test(key)); // AWS service name is non-12-digits string
       const cost = group.Metrics.UnblendedCost.Amount;
       const costDate = day.TimePeriod.End;
 
