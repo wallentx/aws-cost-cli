@@ -6,7 +6,9 @@ export async function getAccountAlias(awsConfig: AWSConfig): Promise<string> {
   showSpinner('Getting account alias');
 
   if (awsConfig.targetAccount) {
-    return awsConfig.targetAccount;
+    const organizations = new AWS.Organizations({region: 'us-east-1'}); // Organizations API is only available in us-east-1
+    const accountInfo = await organizations.describeAccount({ AccountId: awsConfig.targetAccount }).promise();
+    return accountInfo['Account']['Name'] || awsConfig.targetAccount;
   }
 
   const iam = new AWS.IAM(awsConfig);
