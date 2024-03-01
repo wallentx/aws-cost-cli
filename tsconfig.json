@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "outDir": "dist",
+    "typeRoots": ["node_modules/@types"],
     "noEmit": true
   },
   "exclude": ["node_modules", "dist"],

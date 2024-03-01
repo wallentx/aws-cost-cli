@@ -34,9 +34,11 @@ $ aws-cost --help
 
     -k, --access-key [key]         AWS access key
     -s, --secret-key [key]         AWS secret key
+    -t, --session-token [key]      AWS session token
     -r, --region [region]          AWS region (default: us-east-1)
     -a, --role-arn [arn]           AWS role ARN to assume
 
+    --target-account [id]          Account ID to see cost
     -p, --profile [profile]        AWS profile to use (default: "default")
 
     -j, --json                     Get the output as JSON
@@ -68,6 +70,12 @@ If you need to assume a role, you can pass the `role-arn` option:
 
 ```bash
 aws-cost -a arn:aws:iam::123456789012:role/your-role-arn
+```
+
+If you need to query cost info of another account under your organization, you can pass the `--target-account` option:
+
+```bash
+aws-cost --target-account 123456789012
 ```
 
 ## Detailed Breakdown

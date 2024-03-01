@@ -25,6 +25,7 @@ program
   .option('-t, --session-Token [key]', 'AWS session Token')
   .option('-r, --region [region]', 'AWS region', 'us-east-1')
   .option('--role-arn [arn]', 'ARN of IAM role')
+  .option('--target-account [id]', 'Account ID to see cost')
   // Output variants
   .option('-j, --json', 'Get the output as JSON')
   .option('-u, --summary', 'Get only the summary without service breakdown')
@@ -47,6 +48,7 @@ type OptionsType = {
   sessionToken: string;
   region: string;
   roleArn: string;
+  targetAccount: string;
   // AWS profile to use
   profile: string;
   // Output variants
@@ -74,6 +76,7 @@ const awsConfig = await getAwsConfigFromOptionsOrFile({
   sessionToken: options.sessionToken,
   region: options.region,
   roleArn: options.roleArn,
+  targetAccount: options.targetAccount,
 });
 
 const alias = await getAccountAlias(awsConfig);
