@@ -102,7 +102,6 @@ async function loadAwsCredentials(profile: string = 'default', region: string, r
       console.error("Error fetching temporary credentials:", error);
     }
 
-      // todo: obtain temporary credentials
     const sharedCredentialsFile = process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
     const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
 
