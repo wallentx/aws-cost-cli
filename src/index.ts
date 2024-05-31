@@ -30,7 +30,10 @@ program
   .option('-t, --text', 'Get the output as plain text (no colors / tables)')
   // Slack integration
   .option('-S, --slack-token [token]', 'Token for the slack integration')
-  .option('-C, --slack-channel [channel]', 'Channel to which the slack integration should post')
+  .option(
+    '-C, --slack-channel [channel]',
+    'Channel to which the slack integration should post',
+  )
   // Other options
   .option('-v, --version', 'Get the version of the CLI')
   .option('-h, --help', 'Get the help of the CLI')
@@ -83,5 +86,11 @@ if (options.json) {
 
 // Send a notification to slack if the token and channel are provided
 if (options.slackToken && options.slackChannel) {
-  await notifySlack(alias, costs, options.summary, options.slackToken, options.slackChannel);
+  await notifySlack(
+    alias,
+    costs,
+    options.summary,
+    options.slackToken,
+    options.slackChannel,
+  );
 }

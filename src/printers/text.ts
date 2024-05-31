@@ -14,7 +14,11 @@ function printPlainSummary(accountAlias: string, costs: TotalCosts) {
   console.log(`  Yesterday: $${costs.totals.yesterday.toFixed(2)}`);
 }
 
-export function printPlainText(accountAlias: string, totals: TotalCosts, isSummary: boolean = false) {
+export function printPlainText(
+  accountAlias: string,
+  totals: TotalCosts,
+  isSummary: boolean = false,
+) {
   printPlainSummary(accountAlias, totals);
   if (isSummary) {
     return;
@@ -22,32 +26,42 @@ export function printPlainText(accountAlias: string, totals: TotalCosts, isSumma
 
   const serviceTotals = totals.totalsByService;
 
-  const allServices = Object.keys(serviceTotals.yesterday).sort((a, b) => b.length - a.length);
+  const allServices = Object.keys(serviceTotals.yesterday).sort(
+    (a, b) => b.length - a.length,
+  );
 
   console.log('');
   console.log('Totals by Service:');
 
   console.log('  Last Month:');
   allServices.forEach((service) => {
-    console.log(`    ${service}: $${serviceTotals.lastMonth[service].toFixed(2)}`);
+    console.log(
+      `    ${service}: $${serviceTotals.lastMonth[service].toFixed(2)}`,
+    );
   });
 
   console.log('');
   console.log('  This Month:');
   allServices.forEach((service) => {
-    console.log(`    ${service}: $${serviceTotals.thisMonth[service].toFixed(2)}`);
+    console.log(
+      `    ${service}: $${serviceTotals.thisMonth[service].toFixed(2)}`,
+    );
   });
 
   console.log('');
   console.log('  Last 7 Days:');
   allServices.forEach((service) => {
-    console.log(`    ${service}: $${serviceTotals.last7Days[service].toFixed(2)}`);
+    console.log(
+      `    ${service}: $${serviceTotals.last7Days[service].toFixed(2)}`,
+    );
   });
 
   console.log('');
   console.log('  Yesterday:');
   allServices.forEach((service) => {
-    console.log(`    ${service}: $${serviceTotals.yesterday[service].toFixed(2)}`);
+    console.log(
+      `    ${service}: $${serviceTotals.yesterday[service].toFixed(2)}`,
+    );
   });
 }
 
