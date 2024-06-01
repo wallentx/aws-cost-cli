@@ -21,7 +21,7 @@
     "build": "tsup",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm format-check",
     "dev": "tsup --watch",
     "prebuild": "run-s clean",
     "predev": "run-s clean",
