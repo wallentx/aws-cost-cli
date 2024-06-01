@@ -21,6 +21,7 @@
     "build": "tsup",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
+    "lint": "eslint .",
     "dev": "tsup --watch",
     "prebuild": "run-s clean",
     "predev": "run-s clean",
@@ -64,9 +65,14 @@
     "@babel/core": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
     "babel-jest": "^29.7.0",
+    "eslint": "^9.4.0",
     "jest": "^29.7.0",
     "js-with-babel": "link:ts-jest/presets/js-with-babel",
     "npm-run-all": "^4.1.5",
@@ -74,6 +80,7 @@
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.1",
     "tsup": "^6.5.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5",
+    "typescript-eslint": "^7.11.0"
   }
 }
