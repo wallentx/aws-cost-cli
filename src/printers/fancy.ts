@@ -57,7 +57,7 @@ export function printFancy(
     `${serviceHeader} ${lastMonthHeader} ${thisMonthHeader} ${last7DaysHeader} ${yesterdayHeader}`,
   );
 
-  for (let service of sortedServiceNames) {
+  for (const service of sortedServiceNames) {
     const serviceLabel = chalk.cyan(service.padStart(maxServiceLength));
     const lastMonthTotal = chalk.green(
       `$${serviceCosts.lastMonth[service].toFixed(2)}`.padEnd(headerPadLength),

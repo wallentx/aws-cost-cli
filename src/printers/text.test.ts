@@ -1,5 +1,4 @@
 import { TotalCosts } from '../cost';
-import { hideSpinner } from '../logger';
 import { printPlainSummary } from './text';
 
 describe('printPlainSummary', () => {

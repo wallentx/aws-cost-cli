@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
 import chalk from 'chalk';
 import { printFatalError } from './logger';

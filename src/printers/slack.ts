@@ -33,7 +33,7 @@ export async function notifySlack(
   const totals = costs.totals;
   const serviceCosts = costs.totalsByService;
 
-  let serviceCostsYesterday = [];
+  const serviceCostsYesterday = [];
   Object.keys(serviceCosts.yesterday).forEach((service) => {
     serviceCosts.yesterday[service].toFixed(2);
     serviceCostsYesterday.push(
