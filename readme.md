@@ -20,7 +20,7 @@ For the simple usage, just run the command without any options.
 aws-cost
 ```
 
-The output will be a the totals with breakdown by service. Optionally, you can pass the following options to modify the output:
+The output will be the totals with breakdown by service. Optionally, you can pass the following options to modify the output:
 
 ```bash
 $ aws-cost --help
