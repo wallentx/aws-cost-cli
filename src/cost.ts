@@ -1,5 +1,9 @@
 import AWS from 'aws-sdk';
 import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 import { AWSConfig } from './config';
 import { showSpinner } from './logger';
 
@@ -15,7 +19,7 @@ export async function getRawCostByService(
   showSpinner('Getting pricing data');
 
   const costExplorer = new AWS.CostExplorer(awsConfig);
-  const endDate = dayjs().subtract(1, 'day');
+  const endDate = dayjs(); // `endDate` is set to 'today' but its cost be omitted because of API spec (see: https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html#API_GetCostAndUsage_RequestSyntax)
   const startDate = endDate.subtract(65, 'day');
 
   const groupByConfig = [
@@ -74,7 +78,7 @@ export async function getRawCostByService(
       const filterKeys = group.Keys;
       const serviceName = filterKeys.find((key) => !/^\d{12}$/.test(key)); // AWS service name is non-12-digits string
       const cost = group.Metrics.UnblendedCost.Amount;
-      const costDate = day.TimePeriod.End;
+      const costDate = day.TimePeriod.Start; // must be set to `Start` not `End` because the end of `Period` parameter will be omitted (see: https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html#API_GetCostAndUsage_RequestSyntax)
 
       costByService[serviceName] = costByService[serviceName] || {};
       costByService[serviceName][costDate] = parseFloat(cost);
@@ -118,8 +122,8 @@ function calculateServiceTotals(
 
   const startOfLastMonth = dayjs().subtract(1, 'month').startOf('month');
   const startOfThisMonth = dayjs().startOf('month');
-  const startOfLast7Days = dayjs().subtract(7, 'day');
-  const startOfYesterday = dayjs().subtract(1, 'day');
+  const startOfLast7Days = dayjs().subtract(7, 'day').startOf('day');
+  const startOfYesterday = dayjs().subtract(1, 'day').startOf('day');
 
   for (const service of Object.keys(rawCostByService)) {
     const servicePrices = rawCostByService[service];
@@ -141,11 +145,8 @@ function calculateServiceTotals(
         thisMonthServiceTotal += price;
       }
 
-      if (
-        dateObj.isSame(startOfLast7Days, 'week') &&
-        !dateObj.isSame(startOfYesterday, 'day')
-      ) {
-        last7DaysServiceTotal += price;
+      if (dateObj.isSameOrAfter(startOfLast7Days) && dateObj.isSameOrBefore(dayjs().startOf('day'))) {
+          last7DaysServiceTotal += price;
       }
 
       if (dateObj.isSame(startOfYesterday, 'day')) {

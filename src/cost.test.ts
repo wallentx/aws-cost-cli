@@ -154,7 +154,7 @@ describe('Cost Functions', () => {
         totals: {
           lastMonth: 30 * (1 + 100), // Apr
           thisMonth: 10 * (1.1 + 110), // sum of May 1..May 10
-          last7Days: 7 * (1.1 + 110), // sum of May 4..May 10
+          last7Days: 7 * 1.1 + 7 * 110, // sum of May 4..May 10
           yesterday: 1.1 + 110, // on May 10
         },
         totalsByService: {
