@@ -145,8 +145,11 @@ function calculateServiceTotals(
         thisMonthServiceTotal += price;
       }
 
-      if (dateObj.isSameOrAfter(startOfLast7Days) && dateObj.isSameOrBefore(dayjs().startOf('day'))) {
-          last7DaysServiceTotal += price;
+      if (
+        dateObj.isSameOrAfter(startOfLast7Days) &&
+        dateObj.isSameOrBefore(dayjs().startOf('day'))
+      ) {
+        last7DaysServiceTotal += price;
       }
 
       if (dateObj.isSame(startOfYesterday, 'day')) {
