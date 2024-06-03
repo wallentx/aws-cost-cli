@@ -1,10 +1,13 @@
 import dayjs from 'dayjs';
 
-const generateMockedCostByService = (fixedToday: string, costDataLength: number) => {
-    const fixedFirstDay = dayjs(fixedToday).subtract(costDataLength, 'day');
+const generateMockedCostByService = (
+  fixedToday: string,
+  costDataLength: number,
+) => {
+  const fixedFirstDay = dayjs(fixedToday).subtract(costDataLength, 'day');
 
-    const resultsByTime = [];
-    for (let i = 0; i < costDataLength; i++) {
+  const resultsByTime = [];
+  for (let i = 0; i < costDataLength; i++) {
     const date = dayjs(fixedFirstDay).add(i, 'day').format('YYYY-MM-DD');
     const month = dayjs(date).month(); // 0-indexed (0 = January, 1 = February, etc.)
     let service1Cost;
@@ -54,5 +57,5 @@ const generateMockedCostByService = (fixedToday: string, costDataLength: number)
 };
 
 if (process.env.NODE_ENV === 'test') {
-    module.exports = { generateMockedCostByService };
+  module.exports = { generateMockedCostByService };
 }

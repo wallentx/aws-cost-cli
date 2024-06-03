@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import { AWSConfig } from './config';
 import { getRawCostByService, getTotalCosts } from './cost';
-import { generateMockedCostByService } from './testUtils'
+import { generateMockedCostByService } from './testUtils';
 import AWSMock from 'aws-sdk-mock';
 import dayjs from 'dayjs';
 
@@ -40,7 +40,10 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockedPricingData = generateMockedCostByService(fixedToday, costDataLength);
+      const mockedPricingData = generateMockedCostByService(
+        fixedToday,
+        costDataLength,
+      );
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
         callback(null, mockedPricingData);
@@ -92,7 +95,10 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockedPricingData = generateMockedCostByService(fixedToday, costDataLength);
+      const mockedPricingData = generateMockedCostByService(
+        fixedToday,
+        costDataLength,
+      );
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
         callback(null, mockedPricingData);
