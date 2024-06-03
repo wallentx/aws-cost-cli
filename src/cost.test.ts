@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
 import { AWSConfig } from './config';
 import { getRawCostByService, getTotalCosts } from './cost';
+import { generateMockedCostByService } from './testUtils'
 import AWSMock from 'aws-sdk-mock';
 import dayjs from 'dayjs';
 
@@ -9,57 +10,6 @@ import dayjs from 'dayjs';
 const costDataLength = 65;
 const fixedToday = '2024-05-11'; // cost of 'this month' will be sum of 10 days from May 1 to May 10 ('today' is omitted because its cost is incomplete)
 const fixedFirstDay = dayjs(fixedToday).subtract(costDataLength, 'day');
-
-const generateMockPricingData = () => {
-  const resultsByTime = [];
-  for (let i = 0; i < costDataLength; i++) {
-    const date = dayjs(fixedFirstDay).add(i, 'day').format('YYYY-MM-DD');
-    const month = dayjs(date).month(); // 0-indexed (0 = January, 1 = February, etc.)
-    let service1Cost;
-
-    switch (month) {
-      case 2: // March
-        service1Cost = 0.9;
-        break;
-      case 3: // April
-        service1Cost = 1.0; // Total cost of service1 in April will be 30.00
-        break;
-      case 4: // May
-        service1Cost = 1.1;
-        break;
-      default:
-        service1Cost = 0.0; // Default cost if none of the above
-    }
-
-    resultsByTime.push({
-      TimePeriod: {
-        Start: date,
-        End: dayjs(date).add(1, 'day').format('YYYY-MM-DD'),
-      },
-      Groups: [
-        {
-          Keys: ['service1'],
-          Metrics: {
-            UnblendedCost: {
-              Amount: String(service1Cost),
-              Unit: 'USD',
-            },
-          },
-        },
-        {
-          Keys: ['service2'],
-          Metrics: {
-            UnblendedCost: {
-              Amount: String(service1Cost * 100),
-              Unit: 'USD',
-            },
-          },
-        },
-      ],
-    });
-  }
-  return { ResultsByTime: resultsByTime };
-};
 
 describe('Cost Functions', () => {
   beforeAll(() => {
@@ -90,7 +40,7 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockPricingData = generateMockPricingData();
+      const mockPricingData = generateMockedCostByService(fixedToday, costDataLength);
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
         callback(null, mockPricingData);
@@ -142,7 +92,7 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockPricingData = generateMockPricingData();
+      const mockPricingData = generateMockedCostByService(fixedToday, costDataLength);
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
         callback(null, mockPricingData);
