@@ -40,10 +40,10 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockPricingData = generateMockedCostByService(fixedToday, costDataLength);
+      const mockedPricingData = generateMockedCostByService(fixedToday, costDataLength);
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
-        callback(null, mockPricingData);
+        callback(null, mockedPricingData);
       });
 
       const rawCostByService = await getRawCostByService(awsConfig);
@@ -92,10 +92,10 @@ describe('Cost Functions', () => {
         region: 'us-east-1',
       };
 
-      const mockPricingData = generateMockedCostByService(fixedToday, costDataLength);
+      const mockedPricingData = generateMockedCostByService(fixedToday, costDataLength);
 
       AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
-        callback(null, mockPricingData);
+        callback(null, mockedPricingData);
       });
 
       const totalCosts = await getTotalCosts(awsConfig);
