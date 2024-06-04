@@ -24,7 +24,7 @@ program
   .option('-s, --secret-key [key]', 'AWS secret key')
   .option('-t, --session-Token [key]', 'AWS session Token')
   .option('-r, --region [region]', 'AWS region', 'us-east-1')
-  .option('--role-arn [arn]', 'ARN of IAM role')
+  .option('-a, --role-arn [arn]', 'ARN of IAM role')
   .option('--target-account [id]', 'Account ID to see cost')
   // Output variants
   .option('-j, --json', 'Get the output as JSON')
