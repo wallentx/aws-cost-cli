@@ -58,8 +58,30 @@ export async function notifySlack(
 > Total Last Month: \`$${totals.lastMonth.toFixed(2)}\`
 `;
 
+  let periodNotation: string;
+  switch (period) {
+    case 'yesterday':
+      periodNotation = 'Yesterday';
+      break;
+
+    case 'last7Days':
+      periodNotation = 'Last 7 Days';
+      break;
+
+    case 'thisMonth':
+      periodNotation = 'This Month';
+      break;
+
+    case 'lastMonth':
+      periodNotation = 'Last Month';
+      break;
+    default:
+      periodNotation = 'Yesterday';
+      break;
+  }
+
   const breakdown = `
-> *Breakdown by Service:*
+> *Breakdown by Service* (${periodNotation}):
 ${formatServiceBreakdown(costs, period)}
 `;
 
