@@ -44,9 +44,9 @@ AWSMock.mock('CostExplorer', 'getCostAndUsage', (params, callback) => {
 });
 
 describe('formatServiceBreakdown', () => {
-  it('should return service breakdown of "yesterday" by default', async () => {
+  it('should return service breakdown of "yesterday"', async () => {
     const totalCosts = await getTotalCosts(awsConfig);
-    const result = formatServiceBreakdown(totalCosts);
+    const result = formatServiceBreakdown(totalCosts, 'yesterday');
 
     // cost value is defined in generateMockedCostByService
     expect(result).toEqual('> service2: `$110.00`\n' + '> service1: `$1.10`');
