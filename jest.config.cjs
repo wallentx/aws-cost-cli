@@ -10,6 +10,10 @@ var esmModules = [
   'is-interactive',
   'stdin-discarder',
   'aws-sdk-client-mock',
+  'node-fetch',
+  'data-uri-to-buffer',
+  'fetch-blob',
+  'formdata-polyfill',
 ];
 
 module.exports = {

@@ -79,3 +79,9 @@ ${formatServiceBreakdown(costs)}
     },
   });
 }
+
+if (process.env.NODE_ENV === 'test') {
+  Object.assign(module.exports, {
+    formatServiceBreakdown,
+  });
+}

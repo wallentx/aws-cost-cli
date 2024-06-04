@@ -180,3 +180,9 @@ export async function getTotalCosts(awsConfig: AWSConfig): Promise<TotalCosts> {
 
   return totals;
 }
+
+if (process.env.NODE_ENV === 'test') {
+  Object.assign(module.exports, {
+    calculateServiceTotals,
+  });
+}
