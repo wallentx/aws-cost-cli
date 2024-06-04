@@ -36,6 +36,10 @@ program
     '-C, --slack-channel [channel]',
     'Channel to which the slack integration should post',
   )
+  .option(
+    '-P, --breakdown-period [period]',
+    'Unit period to show service breakdown (yesterday|last7Days|thisMonth|lastMonth)',
+  )
   // Other options
   .option('-v, --version', 'Get the version of the CLI')
   .option('-h, --help', 'Get the help of the CLI')
@@ -58,6 +62,7 @@ type OptionsType = {
   // Slack token
   slackToken: string;
   slackChannel: string;
+  breakdownPeriod: string;
   // Other options
   help: boolean;
 };
@@ -98,5 +103,6 @@ if (options.slackToken && options.slackChannel) {
     options.summary,
     options.slackToken,
     options.slackChannel,
+    options.breakdownPeriod,
   );
 }

@@ -35,6 +35,7 @@ export async function notifySlack(
   isSummary: boolean,
   slackToken: string,
   slackChannel: string,
+  period: string = 'yesterday',
 ) {
   const channel = slackChannel;
 
@@ -59,7 +60,7 @@ export async function notifySlack(
 
   const breakdown = `
 > *Breakdown by Service:*
-${formatServiceBreakdown(costs)}
+${formatServiceBreakdown(costs, period)}
 `;
 
   let message = `${summary}`;

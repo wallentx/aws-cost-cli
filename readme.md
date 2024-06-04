@@ -47,6 +47,7 @@ $ aws-cost --help
 
     -S, --slack-token [token]      Slack token for the slack message
     -C, --slack-channel [channel]  Slack channel to post the message to
+    -P, --breakdown-period [period] Unit period to show service breakdown (yesterday|last7Days|thisMonth|lastMonth)')
 
     -v, --version                  Get the version of the CLI
     -h, --help                     Get the help of the CLI
