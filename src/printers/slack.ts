@@ -7,18 +7,26 @@ import { TotalCosts } from '../cost';
  * @param costs Cost breakdown for account
  * @returns formatted message
  */
-function formatServiceBreakdown(costs: TotalCosts): string {
-  const serviceCosts = costs.totalsByService;
+function formatServiceBreakdown(costs: TotalCosts, period: string): string {
+  const validPeriods = ['yesterday', 'last7Days', 'thisMonth', 'lastMonth'];
 
-  const sortedServices = Object.keys(serviceCosts.yesterday)
-    .filter((service) => serviceCosts.yesterday[service] > 0)
-    .sort((a, b) => serviceCosts.yesterday[b] - serviceCosts.yesterday[a]);
+  if (!validPeriods.includes(period)) {
+    throw new Error(
+      '"period" must be one of "yesterday", "thisMonth", or "lastMonth"',
+    );
+  }
 
-  const serviceCostsYesterday = sortedServices.map((service) => {
-    return `> ${service}: \`$${serviceCosts.yesterday[service].toFixed(2)}\``;
+  const serviceCosts = costs.totalsByService[period];
+
+  const sortedServices = Object.keys(serviceCosts)
+    .filter((service) => serviceCosts[service] > 0)
+    .sort((a, b) => serviceCosts[b] - serviceCosts[a]);
+
+  const serviceCostsFormatted = sortedServices.map((service) => {
+    return `> ${service}: \`$${serviceCosts[service].toFixed(2)}\``;
   });
 
-  return serviceCostsYesterday.join('\n');
+  return serviceCostsFormatted.join('\n');
 }
 
 export async function notifySlack(
