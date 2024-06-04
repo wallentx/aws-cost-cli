@@ -25,7 +25,7 @@ program
   .option('-t, --session-Token [key]', 'AWS session Token')
   .option('-r, --region [region]', 'AWS region', 'us-east-1')
   .option('-a, --role-arn [arn]', 'ARN of IAM role')
-  .option('--target-account [id]', 'Account ID to see cost')
+  .option('-T, --target-account [id]', 'Account ID to see cost')
   // Output variants
   .option('-j, --json', 'Get the output as JSON')
   .option('-u, --summary', 'Get only the summary without service breakdown')

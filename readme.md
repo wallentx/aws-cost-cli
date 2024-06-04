@@ -38,7 +38,7 @@ $ aws-cost --help
     -r, --region [region]          AWS region (default: us-east-1)
     -a, --role-arn [arn]           AWS role ARN to assume
 
-    --target-account [id]          Account ID to see cost
+    -T, --target-account [id]      Account ID to see cost
     -p, --profile [profile]        AWS profile to use (default: "default")
 
     -j, --json                     Get the output as JSON
