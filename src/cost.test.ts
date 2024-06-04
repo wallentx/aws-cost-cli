@@ -134,6 +134,8 @@ describe('Cost Functions', () => {
         },
       };
 
+      console.log(expectedTotalCosts);
+
       const roundToTwoDecimals = (num: number) => Math.round(num * 100) / 100;
 
       Object.keys(totalCosts.totals).forEach((key) => {
