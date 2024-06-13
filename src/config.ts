@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
 import chalk from 'chalk';
 import { printFatalError } from './logger';
@@ -40,7 +39,7 @@ export async function getAwsConfigFromOptionsOrFile(options: {
       credentials: {
         accessKeyId: accessKey,
         secretAccessKey: secretKey,
-        sessionToken: sessionToken
+        sessionToken: sessionToken,
       },
       region: region,
     };
@@ -56,7 +55,9 @@ export async function getAwsConfigFromOptionsOrFile(options: {
  * Loads the environment variables from the .env file
  * @param path Path to the .env file
  */
-async function loadAwsCredentials(profile: string = 'default'): Promise<AWSConfig['credentials'] | undefined> {
+async function loadAwsCredentials(
+  profile: string = 'default',
+): Promise<AWSConfig['credentials'] | undefined> {
   const configFiles = await loadSharedConfigFiles();
 
   const credentialsFile = configFiles.credentialsFile;
@@ -72,7 +73,8 @@ async function loadAwsCredentials(profile: string = 'default'): Promise<AWSConfi
   // const region: string = configFile?.[profile]?.region;
 
   if (!accessKey || !secretKey) {
-    const sharedCredentialsFile = process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
+    const sharedCredentialsFile =
+      process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
     const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
 
     printFatalError(`

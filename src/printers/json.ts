@@ -4,7 +4,7 @@ import { hideSpinner } from '../logger';
 export function printJson(
   accountAlias: string,
   totalCosts: TotalCosts,
-  isSummary = false
+  isSummary = false,
 ) {
   hideSpinner();
 
@@ -16,8 +16,8 @@ export function printJson(
           totals: totalCosts.totals,
         },
         null,
-        2
-      )
+        2,
+      ),
     );
 
     return;
@@ -30,7 +30,7 @@ export function printJson(
         ...totalCosts,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }

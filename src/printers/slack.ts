@@ -26,17 +26,19 @@ export async function notifySlack(
   costs: TotalCosts,
   isSummary: boolean,
   slackToken: string,
-  slackChannel: string
+  slackChannel: string,
 ) {
   const channel = slackChannel;
 
   const totals = costs.totals;
   const serviceCosts = costs.totalsByService;
 
-  let serviceCostsYesterday = [];
+  const serviceCostsYesterday = [];
   Object.keys(serviceCosts.yesterday).forEach((service) => {
     serviceCosts.yesterday[service].toFixed(2);
-    serviceCostsYesterday.push(`${service}: $${serviceCosts.yesterday[service].toFixed(2)}`);
+    serviceCostsYesterday.push(
+      `${service}: $${serviceCosts.yesterday[service].toFixed(2)}`,
+    );
   });
 
   const summary = `> *Account: ${accountAlias}*

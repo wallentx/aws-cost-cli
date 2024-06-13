@@ -22,7 +22,10 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: make install
+
+      - name: Lint & format
+        run: make lint
 
       - name: Run tests
-        run: pnpm test
+        run: make test
