@@ -1,4 +1,4 @@
-name: CI on pull request
+name: CI for before & after Pull Request Merge
 
 on:
   pull_request:
@@ -7,24 +7,5 @@ on:
       - main
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.node-version'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run tests
-        run: pnpm test
+  call-common-checks:
+    uses: ./.github/workflows/check.yaml
