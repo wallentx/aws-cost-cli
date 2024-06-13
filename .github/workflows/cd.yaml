@@ -1,4 +1,3 @@
-# .github/workflows/cd.yml
 name: Bump Semantic Version
 
 on:
