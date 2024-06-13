@@ -9,6 +9,7 @@ var esmModules = [
   'ansi-regex',
   'is-interactive',
   'stdin-discarder',
+  'aws-sdk-client-mock',
 ];
 
 module.exports = {
