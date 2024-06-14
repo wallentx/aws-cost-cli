@@ -19,29 +19,28 @@ export async function getRawCostByService(
   const startDate = endDate.subtract(65, 'day');
 
   // Get the cost and usage data for the specified account
-  const pricingData = await costExplorer
-    .getCostAndUsage({
-      TimePeriod: {
-        Start: startDate.format('YYYY-MM-DD'),
-        End: endDate.format('YYYY-MM-DD'),
-      },
-      Granularity: 'DAILY',
-      Filter: {
-        Not: {
-          Dimensions: {
-            Key: 'RECORD_TYPE',
-            Values: ['Credit', 'Refund', 'Upfront', 'Support'],
-          },
+  const pricingData = await costExplorer.getCostAndUsage({
+    TimePeriod: {
+      Start: startDate.format('YYYY-MM-DD'),
+      End: endDate.format('YYYY-MM-DD'),
+    },
+    Granularity: 'DAILY',
+    Filter: {
+      Not: {
+        Dimensions: {
+          Key: 'RECORD_TYPE',
+          Values: ['Credit', 'Refund', 'Upfront', 'Support'],
         },
       },
-      Metrics: ['UnblendedCost'],
-      GroupBy: [
-        {
-          Type: 'DIMENSION',
-          Key: 'SERVICE',
-        },
-      ],
-    });
+    },
+    Metrics: ['UnblendedCost'],
+    GroupBy: [
+      {
+        Type: 'DIMENSION',
+        Key: 'SERVICE',
+      },
+    ],
+  });
 
   const costByService = {};
 
