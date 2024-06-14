@@ -1,7 +1,7 @@
 import { TotalCosts } from '../cost';
 import { hideSpinner } from '../logger';
 
-function printPlainSummary(accountAlias: string, costs: TotalCosts) {
+export function printPlainSummary(accountAlias: string, costs: TotalCosts) {
   hideSpinner();
   console.clear();
   console.log('');
@@ -63,8 +63,4 @@ export function printPlainText(
       `    ${service}: $${serviceTotals.yesterday[service].toFixed(2)}`,
     );
   });
-}
-
-if (process.env.NODE_ENV === 'test') {
-  module.exports = { printPlainSummary };
 }
