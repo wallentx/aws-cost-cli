@@ -25,7 +25,7 @@ program
   .option('-S, --slack-token [token]', 'Token for the slack integration')
   .option(
     '-C, --slack-channel [channel]',
-    'Channel to which the slack integration should post'
+    'Channel to which the slack integration should post',
   )
   .option('-v, --version', 'Get the version of the CLI')
   .option('-h, --help', 'Get the help of the CLI')
@@ -66,7 +66,7 @@ async function main() {
         costs,
         options.summary,
         options.slackToken,
-        options.slackChannel
+        options.slackChannel,
       );
     }
   } catch (error) {
