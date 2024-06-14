@@ -1,6 +1,10 @@
 import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { SSOClient, GetRoleCredentialsCommand } from '@aws-sdk/client-sso';
 import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 import { printFatalError } from './logger';
 
 export type EnvConfig = {
@@ -21,13 +25,12 @@ export type AWSConfig = {
 export async function getAwsConfigFromOptionsOrFile(options: {
   profile: string;
   accessKey: string;
-  secretKey;
-  sessionToken;
+  secretKey: string;
+  sessionToken: string;
   region: string;
   roleArn?: string;
 }): Promise<AWSConfig> {
-  const { profile, accessKey, secretKey, sessionToken, region, roleArn } =
-    options;
+  const { profile, accessKey, secretKey, sessionToken, region, roleArn } = options;
 
   if (accessKey || secretKey) {
     if (!accessKey || !secretKey) {
@@ -54,14 +57,10 @@ export async function getAwsConfigFromOptionsOrFile(options: {
   };
 }
 
-/**
- * Loads the environment variables from the .env file
- * @param path Path to the .env file
- */
 async function loadAwsCredentials(
   profile: string = 'default',
   region: string,
-  roleArn = '',
+  roleArn: string = '',
 ): Promise<AWSConfig['credentials'] | undefined> {
   const configFiles = await loadSharedConfigFiles();
 
@@ -71,18 +70,15 @@ async function loadAwsCredentials(
   const secretKey: string = credentialsFile?.[profile]?.aws_secret_access_key;
   const sessionToken: string = credentialsFile?.[profile]?.aws_session_token;
 
-  // Fixing the region to us-east-1 since Cost Explorer only supports this region
-  // https://docs.aws.amazon.com/general/latest/gr/billing.html#billing-cur
-  // https://github.com/kamranahmedse/aws-cost-cli/issues/1
-  // const configFile = configFiles.configFile;
-  // const region: string = configFile?.[profile]?.region;
   if (accessKey && secretKey) {
     return {
       accessKeyId: accessKey,
       secretAccessKey: secretKey,
       sessionToken: sessionToken,
     };
-  } else {
+  } else if (isSsoProfile(configFiles, profile)) {
+    return await getSsoCredentials(profile);
+  } else if (roleArn) {
     try {
       const stsClient = new STSClient({ region: region });
       const assumeRoleCommand = new AssumeRoleCommand({
@@ -100,9 +96,13 @@ async function loadAwsCredentials(
         };
       }
     } catch (error) {
-      console.error('Error fetching temporary credentials:', error);
+      if (error.Code === 'AccessDenied') {
+        console.warn(`AccessDenied error when assuming role: ${roleArn}. Continuing with SSO credentials.`);
+      } else {
+        console.error('Error fetching temporary credentials:', error);
+      }
     }
-
+  } else {
     const sharedCredentialsFile =
       process.env.AWS_SHARED_CREDENTIALS_FILE || '~/.aws/credentials';
     const sharedConfigFile = process.env.AWS_CONFIG_FILE || '~/.aws/config';
@@ -126,4 +126,55 @@ async function loadAwsCredentials(
     ${chalk.bold(`--role-arn`)}
     `);
   }
+}
+
+async function getSsoCredentials(profile: string): Promise<AWSConfig['credentials']> {
+  const configFiles = await loadSharedConfigFiles();
+  const configFile = configFiles.configFile;
+
+  const ssoStartUrl = configFile?.[profile]?.sso_start_url;
+  const ssoRegion = configFile?.[profile]?.sso_region;
+  const ssoAccountId = configFile?.[profile]?.sso_account_id;
+  const ssoRoleName = configFile?.[profile]?.sso_role_name;
+  const ssoSession = configFile?.[profile]?.sso_session;
+
+  if (!ssoStartUrl || !ssoRegion || !ssoAccountId || !ssoRoleName || !ssoSession) {
+    throw new Error('Missing SSO configuration for the profile');
+  }
+
+  const ssoClient = new SSOClient({ region: ssoRegion });
+
+  const ssoTokenPath = path.join(os.homedir(), '.aws', 'sso', 'cache', `${ssoSession}.json`);
+  const ssoTokenContent = fs.readFileSync(ssoTokenPath).toString();
+  const ssoToken = JSON.parse(ssoTokenContent);
+
+  const params = {
+    accountId: ssoAccountId,
+    roleName: ssoRoleName,
+    accessToken: ssoToken.accessToken,
+  };
+
+  const command = new GetRoleCredentialsCommand(params);
+  const response = await ssoClient.send(command);
+
+  if (response.roleCredentials) {
+    return {
+      accessKeyId: response.roleCredentials.accessKeyId,
+      secretAccessKey: response.roleCredentials.secretAccessKey,
+      sessionToken: response.roleCredentials.sessionToken,
+    };
+  } else {
+    throw new Error('Unable to fetch SSO credentials');
+  }
+}
+
+function isSsoProfile(configFiles: any, profile: string): boolean {
+  const configFile = configFiles.configFile;
+  return (
+    configFile?.[profile]?.sso_start_url &&
+    configFile?.[profile]?.sso_region &&
+    configFile?.[profile]?.sso_account_id &&
+    configFile?.[profile]?.sso_role_name &&
+    configFile?.[profile]?.sso_session
+  );
 }

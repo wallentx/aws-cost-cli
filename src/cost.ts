@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import { CostExplorer } from '@aws-sdk/client-cost-explorer';
 import dayjs from 'dayjs';
 import { AWSConfig } from './config';
 import { showSpinner } from './logger';
@@ -14,7 +14,7 @@ export async function getRawCostByService(
 ): Promise<RawCostByService> {
   showSpinner('Getting pricing data');
 
-  const costExplorer = new AWS.CostExplorer(awsConfig);
+  const costExplorer = new CostExplorer(awsConfig);
   const endDate = dayjs().subtract(1, 'day');
   const startDate = endDate.subtract(65, 'day');
 
@@ -41,8 +41,7 @@ export async function getRawCostByService(
           Key: 'SERVICE',
         },
       ],
-    })
-    .promise();
+    });
 
   const costByService = {};
 

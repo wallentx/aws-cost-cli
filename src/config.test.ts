@@ -4,7 +4,6 @@ import {
   AssumeRoleCommandOutput,
   Credentials,
 } from '@aws-sdk/client-sts';
-import 'aws-sdk-client-mock-jest';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { getAwsConfigFromOptionsOrFile } from './config';
 
@@ -44,8 +43,8 @@ describe('should assume role if roleArn is provided', (): void => {
 
     expect(stsMock).toHaveReceivedCommandWith(AssumeRoleCommand, {
       RoleArn: roleArn,
+      RoleSessionName: 'aws-cost-cli',
     });
-
     expect(awsConfig.credentials).toEqual({
       accessKeyId: mockCredentials.AccessKeyId,
       secretAccessKey: mockCredentials.SecretAccessKey,
