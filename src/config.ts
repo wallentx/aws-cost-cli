@@ -16,6 +16,7 @@ export type AWSConfig = {
     sessionToken: string;
   };
   region: string;
+  targetAccount: string;
 };
 
 export async function getAwsConfigFromOptionsOrFile(options: {
@@ -25,9 +26,17 @@ export async function getAwsConfigFromOptionsOrFile(options: {
   sessionToken;
   region: string;
   roleArn?: string;
+  targetAccount?: string;
 }): Promise<AWSConfig> {
-  const { profile, accessKey, secretKey, sessionToken, region, roleArn } =
-    options;
+  const {
+    profile,
+    accessKey,
+    secretKey,
+    sessionToken,
+    region,
+    roleArn,
+    targetAccount,
+  } = options;
 
   if (accessKey || secretKey) {
     if (!accessKey || !secretKey) {
@@ -45,12 +54,14 @@ export async function getAwsConfigFromOptionsOrFile(options: {
         sessionToken: sessionToken,
       },
       region: region,
+      targetAccount: '',
     };
   }
 
   return {
     credentials: await loadAwsCredentials(profile, region, roleArn),
     region: region,
+    targetAccount: targetAccount,
   };
 }
 
@@ -124,6 +135,7 @@ async function loadAwsCredentials(
     ${chalk.bold(`--secret-key`)}
     ${chalk.bold(`--region`)}
     ${chalk.bold(`--role-arn`)}
+    ${chalk.bold(`--target-account`)}
     `);
   }
 }
