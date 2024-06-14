@@ -7,18 +7,26 @@ import { TotalCosts } from '../cost';
  * @param costs Cost breakdown for account
  * @returns formatted message
  */
-function formatServiceBreakdown(costs: TotalCosts): string {
-  const serviceCosts = costs.totalsByService;
+function formatServiceBreakdown(costs: TotalCosts, period: string): string {
+  const validPeriods = ['yesterday', 'last7Days', 'thisMonth', 'lastMonth'];
 
-  const sortedServices = Object.keys(serviceCosts.yesterday)
-    .filter((service) => serviceCosts.yesterday[service] > 0)
-    .sort((a, b) => serviceCosts.yesterday[b] - serviceCosts.yesterday[a]);
+  if (!validPeriods.includes(period)) {
+    throw new Error(
+      '"period" must be one of "yesterday", "thisMonth", or "lastMonth"',
+    );
+  }
 
-  const serviceCostsYesterday = sortedServices.map((service) => {
-    return `> ${service}: \`$${serviceCosts.yesterday[service].toFixed(2)}\``;
+  const serviceCosts = costs.totalsByService[period];
+
+  const sortedServices = Object.keys(serviceCosts)
+    .filter((service) => serviceCosts[service] > 0)
+    .sort((a, b) => serviceCosts[b] - serviceCosts[a]);
+
+  const serviceCostsFormatted = sortedServices.map((service) => {
+    return `> ${service}: \`$${serviceCosts[service].toFixed(2)}\``;
   });
 
-  return serviceCostsYesterday.join('\n');
+  return serviceCostsFormatted.join('\n');
 }
 
 export async function notifySlack(
@@ -27,6 +35,7 @@ export async function notifySlack(
   isSummary: boolean,
   slackToken: string,
   slackChannel: string,
+  period: string = 'yesterday',
 ) {
   const channel = slackChannel;
 
@@ -49,9 +58,31 @@ export async function notifySlack(
 > Total Last Month: \`$${totals.lastMonth.toFixed(2)}\`
 `;
 
+  let periodNotation: string;
+  switch (period) {
+    case 'yesterday':
+      periodNotation = 'Yesterday';
+      break;
+
+    case 'last7Days':
+      periodNotation = 'Last 7 Days';
+      break;
+
+    case 'thisMonth':
+      periodNotation = 'This Month';
+      break;
+
+    case 'lastMonth':
+      periodNotation = 'Last Month';
+      break;
+    default:
+      periodNotation = 'Yesterday';
+      break;
+  }
+
   const breakdown = `
-> *Breakdown by Service:*
-${formatServiceBreakdown(costs)}
+> *Breakdown by Service* (${periodNotation}):
+${formatServiceBreakdown(costs, period)}
 `;
 
   let message = `${summary}`;
@@ -77,5 +108,11 @@ ${formatServiceBreakdown(costs)}
       'Content-Type': 'application/json; charset=utf-8',
       Authorization: `Bearer ${slackToken}`,
     },
+  });
+}
+
+if (process.env.NODE_ENV === 'test') {
+  Object.assign(module.exports, {
+    formatServiceBreakdown,
   });
 }
