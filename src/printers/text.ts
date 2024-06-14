@@ -1,7 +1,7 @@
 import { TotalCosts } from '../cost';
 import { hideSpinner } from '../logger';
 
-function printPlainSummary(accountAlias: string, costs: TotalCosts) {
+export function printPlainSummary(accountAlias: string, costs: TotalCosts) {
   hideSpinner();
   console.clear();
   console.log('');
